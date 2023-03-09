@@ -91,6 +91,8 @@ void setup() {
     // Start server and sensor
     web_api_sensor_data();
     dht.begin();
+    // Set next sample after 2s, for sensor to warm up
+    previousMillis = millis() - DHT_SAMPLE_RATE + 2000;
     server.begin();    
   }
 }
@@ -118,6 +120,7 @@ void loop() {
 
 }
 
+// ------------------------- DEFINITIONS ------------------------
 void check_credentials_button() {
   int reset_credentials_val = digitalRead(CRED_RES_PIN);
   if (reset_credentials_val) {
@@ -143,9 +146,16 @@ void reset_stored_credentials() {
 
 void web_api_configuration_hotspot() {
   server.on("/", []() {
-    String content = "<!DOCTYPE HTML>\r\n<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head>";
-    content += "<body><h1>ESP8266 Web Server</h1><form method='get' action='setting'><label>WiFi: </label><input name='ssid' length=32><br/><label>Pass: </label><input type='password' name='pass' length=64><br/><input type='submit'><br/></form></body>";
-    content += "</html>";
+    String content = "<!DOCTYPE HTML>";
+    content += "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'><title>Weather WiFi Station</title></head>";
+    content += "<body style='background-color:#6B5B95;color:#ffffff;'>";
+    content += "<div style='margin-left: 25%;width:50%;'><h1>Weather WiFi Station</h1></div>";
+    content += "<form method='get' action='setting' style='margin-left: 25%;width:50%'>";
+    content += "<div style='margin-bottom:1%;'><label>WiFi</label><br/><input name='ssid' length=32 style='width:100%;'></div>";
+    content += "<div style='margin-bottom:1%;'><label>Pass</label><br/><input type='password' name='pass' length=64 style='width:100%;'></div>";
+    content += "<div style='margin-bottom:1%;'><input type='submit' value='Connect' style=''></div>";
+    content += "</form><div style='margin-left: 25%;width:50%;margin-top:10%'>MrLaki5</div>";
+    content += "</body></html>";
     server.send(200, "text/html", content);
   });
 
@@ -180,9 +190,13 @@ void web_api_configuration_hotspot() {
 
 void web_api_sensor_data() {
   server.on("/", []() {
-    String content = "<!DOCTYPE HTML>\r\n<html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"></head>";
-    content += "<body><h1>ESP8266 Web Server</h1><h2>Temperature: " + String(temp) + "</h2><h2>Humidity: " + String(humidity) + "</h2></body>";
-    content += "</html>";
+    String content = "<!DOCTYPE HTML><html><head><meta name='viewport' content='width=device-width, initial-scale=1'><title>Weather WiFi Station</title></head>";
+    content += "<body style='background-color:#6B5B95;color:#ffffff;'>";
+    content += "<div style='margin-left: 25%;width:50%;'><h1>Weather WiFi Station</h1></div>";
+    content += "<div style='margin-left: 25%;width:50%;'><h3>Temperature: " + String(temp) + "C</h3></div>";
+    content += "<div style='margin-left: 25%;width:50%;'><h3>Humidity: " + String(humidity) + "%</h3></div>";
+    content += "<div style='margin-left: 25%;width:50%;margin-top:10%'>MrLaki5</div>";
+    content += "</body></html>";
     server.send(200, "text/html", content);
   });
 }

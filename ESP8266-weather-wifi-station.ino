@@ -64,7 +64,7 @@ void setup() {
     Serial.println("Starting device configuration hotspot");
     is_configuration_mode = true;
 
-    boolean result = WiFi.softAP("test123", "12345678");
+    boolean result = WiFi.softAP("Weather Station", "12345678");
     Serial.print("Hotspot start status: ");
     Serial.println(result);
 
@@ -78,7 +78,7 @@ void setup() {
     Serial.println(esid);
     WiFi.begin(esid, epass);
     while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
+      delay(50);
       check_credentials_button();
       Serial.print(".");
     }
@@ -123,7 +123,7 @@ void loop() {
 // ------------------------- DEFINITIONS ------------------------
 void check_credentials_button() {
   int reset_credentials_val = digitalRead(CRED_RES_PIN);
-  if (reset_credentials_val) {
+  if (!reset_credentials_val) {
     reset_stored_credentials();
   }
 }

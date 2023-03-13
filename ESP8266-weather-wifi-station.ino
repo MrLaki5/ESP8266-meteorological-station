@@ -9,6 +9,7 @@
 #define DHT_TYPE DHT11
 // How often temp and humidity values are refreshed in ms
 #define DHT_SAMPLE_RATE 60000
+#define UPTIME_SAMPLE_RATE 60000
 #define WEB_SERVER_PORT 80
 // ESP8266 maximum EEPROM size is 4096 bytes (4 KB)
 #define EEPROM_SIZE 512
@@ -24,12 +25,16 @@ float humidity = -1;
 // Init objects
 DHT dht(DHT_PIN, DHT_TYPE);
 ESP8266WebServer server(WEB_SERVER_PORT);
+// Uptime track
+unsigned long uptime_prev_sample = 0;
+String uptime_val = "";
 
 // ------------------------- DECLARATIONS ---------------------
 void reset_stored_credentials();
 void web_api_configuration_hotspot();
 void web_api_sensor_data();
 void check_credentials_button();
+String get_uptime();
 
 // ------------------------- SETUP ----------------------------
 void setup() {
@@ -91,6 +96,7 @@ void setup() {
     Serial.println(WiFi.localIP());
 
     // Start server and sensor
+    uptime_val = get_uptime();
     web_api_sensor_data();
     dht.begin();
     // Set next sample after 2s, for sensor to warm up
@@ -115,6 +121,12 @@ void loop() {
         Serial.println("Failed to read from DHT sensor!");
       }
     }
+
+    // Check uptime
+    if (currentMillis - uptime_prev_sample >= UPTIME_SAMPLE_RATE) {
+      uptime_prev_sample = currentMillis;
+      uptime_val = get_uptime();
+    }
   }
 
 }
@@ -138,6 +150,15 @@ void reset_stored_credentials() {
     EEPROM.write(i, ' ');
   }
   EEPROM.commit();
+}
+
+String get_uptime() {
+  unsigned long curr_time = millis();
+  int uptime_min = int((curr_time / (1000ul * 60)) % 60);
+  int uptime_hr = int((curr_time / (1000ul * 60 * 60)) % 24);
+  int uptime_day = int((curr_time / (1000ul * 60 * 60 * 24)) % 365);
+
+  return String(uptime_day) + "d:" + String(uptime_hr) + "h:" + String(uptime_min) + "m";
 }
 
 void web_api_configuration_hotspot() {
@@ -191,6 +212,7 @@ void web_api_sensor_data() {
     content += "<div style='margin-left: 25%;width:50%;'><h1>Weather WiFi Station</h1></div>";
     content += "<div style='margin-left: 25%;width:50%;'><h3>Temperature: " + String(temp) + "C</h3></div>";
     content += "<div style='margin-left: 25%;width:50%;'><h3>Humidity: " + String(humidity) + "%</h3></div>";
+    content += "<div style='margin-left: 25%;width:50%;'><h4>Uptime: " + uptime_val + "</h4></div>";
     content += "<div style='margin-left: 25%;width:50%;margin-top:10%'>MrLaki5</div>";
     content += "</body></html>";
     server.send(200, "text/html", content);

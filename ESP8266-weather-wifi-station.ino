@@ -40,6 +40,9 @@ void setup() {
   EEPROM.begin(EEPROM_SIZE);
   delay(500);
 
+  // Check if reset credentials is set
+  check_credentials_button();
+
   // Load SSID (max length 32 characters by standard)
   String esid = "";
   for (int i = 0; i < 32; i++) {
@@ -79,7 +82,6 @@ void setup() {
     WiFi.begin(esid, epass);
     while (WiFi.status() != WL_CONNECTED) {
       delay(50);
-      check_credentials_button();
       Serial.print(".");
     }
     // Print local IP address and start web server
@@ -99,9 +101,6 @@ void setup() {
 
 // ------------------------- LOOP ----------------------------
 void loop() {
-  // Credentials reset button
-  check_credentials_button();
-
   // HTTP server handle
   server.handleClient();
 
@@ -139,9 +138,6 @@ void reset_stored_credentials() {
     EEPROM.write(i, ' ');
   }
   EEPROM.commit();
-  
-  Serial.println("Reset device");
-  ESP.reset();
 }
 
 void web_api_configuration_hotspot() {

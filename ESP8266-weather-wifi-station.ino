@@ -15,6 +15,9 @@
 #define EEPROM_SIZE 512
 // Credential reset button
 #define CRED_RES_PIN 14
+// History size
+#define HISTORY_SIZE 5
+#define HISTORY_SAMPLE_RATE 3600000
 
 // ------------------------- GLOBALS --------------------------
 boolean is_configuration_mode = false;
@@ -22,6 +25,9 @@ boolean is_configuration_mode = false;
 unsigned long previousMillis = 0;
 float temp = -1;
 float humidity = -1;
+unsigned long previous_history = 0;
+String temp_history[HISTORY_SIZE] = {"/", "/", "/", "/", "/"};
+String humidity_history[HISTORY_SIZE] = {"/", "/", "/", "/", "/"};
 // Init objects
 DHT dht(DHT_PIN, DHT_TYPE);
 ESP8266WebServer server(WEB_SERVER_PORT);
@@ -126,6 +132,19 @@ void loop() {
     if (currentMillis - uptime_prev_sample >= UPTIME_SAMPLE_RATE) {
       uptime_prev_sample = currentMillis;
       uptime_val = get_uptime();
+    }
+
+    // Check history
+    if (currentMillis - previous_history >= HISTORY_SAMPLE_RATE) {
+      if (!(isnan(humidity) || isnan(temp))) {
+        previous_history = currentMillis;
+        for (int i = HISTORY_SIZE - 1; i > 0; i--) {
+          temp_history[i] = temp_history[i - 1];
+          humidity_history[i] = humidity_history[i - 1];
+        }
+        temp_history[0] = String(temp);
+        humidity_history[0] = String(humidity);
+      }
     }
   }
 

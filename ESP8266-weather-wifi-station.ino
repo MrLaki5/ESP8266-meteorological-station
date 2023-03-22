@@ -20,6 +20,7 @@
 #define HISTORY_SAMPLE_RATE 3600000
 
 // ------------------------- GLOBALS --------------------------
+String app_version = "v1.0";
 boolean is_configuration_mode = false;
 // DHT variables
 unsigned long previousMillis = 0;
@@ -227,12 +228,14 @@ void web_api_configuration_hotspot() {
 void web_api_sensor_data() {
   server.on("/", []() {
     String content = "<!DOCTYPE HTML><html><head><meta name='viewport' content='width=device-width, initial-scale=1'><title>Weather WiFi Station</title></head>";
-    content += "<body style='background-color:#6B5B95;color:#ffffff;'>";
-    content += "<div style='margin-left: 25%;width:50%;'><h1>Weather WiFi Station</h1></div>";
-    content += "<div style='margin-left: 25%;width:50%;'><h3>Temperature: " + String(temp) + "C</h3></div>";
-    content += "<div style='margin-left: 25%;width:50%;'><h3>Humidity: " + String(humidity) + "%</h3></div>";
-    content += "<div style='margin-left: 25%;width:50%;'><h4>Uptime: " + uptime_val + "</h4></div>";
-    content += "<div style='margin-left: 25%;width:50%;margin-top:10%'>MrLaki5</div>";
+    content += "<body style='background-color:#544875;color:#ffffff;text-align: center;'>";
+    content += "<div style='margin-left: 25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h1>Weather WiFi Station</h1></div>";
+    content += "<div style='margin-left: 25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h3>Live</h3><h4>Temp: " + String(temp) + "C</h4><h4>Humidity: " + String(humidity) + "%</h4></div>";
+    for (int i = 0; i < HISTORY_SIZE; i++) {
+      content += "<div style='margin-left: 25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h3>" + String(i) + "h></h3><h4>Temp: " + temp_history[i] + "C</h4><h4>Humidity: " + humidity_history[i] + "%</h4></div>";
+    }
+    content += "<div style='margin-left: 25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h3>Status</h3><h4>Uptime: " + uptime_val + "</h4><h4>Version: " + app_version + "</h4></div>";
+    content += "<div style='margin-left: 25%;width:50%;margin-top:5%;padding:20px;'>MrLaki5</div>";
     content += "</body></html>";
     server.send(200, "text/html", content);
   });

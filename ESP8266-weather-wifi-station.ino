@@ -237,7 +237,7 @@ void web_api_sensor_data() {
       if (!temp_history[i].compareTo("/") && !humidity_history[i].compareTo("/")) {
         break;
       }
-      content += "<div style='margin-left:25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h3>" + String(i) + "h></h3><h4>Temp: " + temp_history[i] + "C</h4><h4>Humidity: " + humidity_history[i] + "%</h4></div>";
+      content += "<div style='margin-left:25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h3>" + String(i + 1) + "h></h3><h4>Temp: " + temp_history[i] + "C</h4><h4>Humidity: " + humidity_history[i] + "%</h4></div>";
     }
     content += "<div style='margin-left:25%;width:50%;margin-top:5%;padding:20px;'>MrLaki5</div>";
     content += "</body></html>";

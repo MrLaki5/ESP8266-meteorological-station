@@ -183,15 +183,16 @@ String get_uptime() {
 
 void web_api_configuration_hotspot() {
   server.on("/", []() {
-    String content = "<!DOCTYPE HTML>";
-    content += "<html><head><meta name='viewport' content='width=device-width, initial-scale=1'><title>Weather WiFi Station</title></head>";
-    content += "<body style='background-color:#6B5B95;color:#ffffff;'>";
-    content += "<div style='margin-left: 25%;width:50%;'><h1>Weather WiFi Station</h1></div>";
-    content += "<form method='get' action='setting' style='margin-left: 25%;width:50%'>";
-    content += "<div style='margin-bottom:1%;'><label>WiFi</label><br/><input name='ssid' length=32 style='width:100%;'></div>";
-    content += "<div style='margin-bottom:1%;'><label>Pass</label><br/><input type='password' name='pass' length=64 style='width:100%;'></div>";
-    content += "<div style='margin-bottom:1%;'><input type='submit' value='Connect' style=''></div>";
-    content += "</form><div style='margin-left: 25%;width:50%;margin-top:10%'>MrLaki5</div>";
+    String content = "<!DOCTYPE HTML><html><head><meta name='viewport' content='width=device-width,initial-scale=1'><title>Weather WiFi Station</title></head>";
+    content += "<body style='background-color:#544875;color:#ffffff;text-align:center;'>";
+    content += "<div style='margin-left:25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h1>Weather WiFi Station</h1></div>";
+    content += "<div style='margin-left:25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h3>Status</h3><h4>Version: " + app_version + "</h4></div>";
+    content += "<div style='margin-left:25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h3>Configuration mode</h3><p>Connect Weather WiFi Station to desired WiFi network.</p></div>";
+    content += "<form method='get' action='setting' style='margin-left:25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'>";
+    content += "<div style='margin-bottom:1%;'><label>WiFi</label><br/><input name='ssid' length=32 style='width:80%;padding:12px;border: 1px solid #ccc;border-radius:4px;'></div>";
+    content += "<div style='margin-bottom:1%;'><label>Pass</label><br/><input type='password' name='pass' length=64 style='width:80%;padding:12px;border: 1px solid #ccc;border-radius:4px;'></div>";
+    content += "<div style='margin-bottom:1%;'><input type='submit' value='Connect' style='padding: 12px;border-radius: 4px;background-color: #CFCBDA;border: none;'></div></form>";
+    content += "<div style='margin-left:25%;width:50%;margin-top:5%;padding:20px;'>MrLaki5</div>";
     content += "</body></html>";
     server.send(200, "text/html", content);
   });
@@ -228,14 +229,17 @@ void web_api_configuration_hotspot() {
 void web_api_sensor_data() {
   server.on("/", []() {
     String content = "<!DOCTYPE HTML><html><head><meta name='viewport' content='width=device-width, initial-scale=1'><title>Weather WiFi Station</title></head>";
-    content += "<body style='background-color:#544875;color:#ffffff;text-align: center;'>";
-    content += "<div style='margin-left: 25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h1>Weather WiFi Station</h1></div>";
-    content += "<div style='margin-left: 25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h3>Live</h3><h4>Temp: " + String(temp) + "C</h4><h4>Humidity: " + String(humidity) + "%</h4></div>";
+    content += "<body style='background-color:#544875;color:#ffffff;text-align:center;'>";
+    content += "<div style='margin-left:25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h1>Weather WiFi Station</h1></div>";
+    content += "<div style='margin-left:25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h3>Status</h3><h4>Uptime: " + uptime_val + "</h4><h4>Version: " + app_version + "</h4></div>";
+    content += "<div style='margin-left:25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h3>Live</h3><h4>Temp: " + String(temp) + "C</h4><h4>Humidity: " + String(humidity) + "%</h4></div>";
     for (int i = 0; i < HISTORY_SIZE; i++) {
-      content += "<div style='margin-left: 25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h3>" + String(i) + "h></h3><h4>Temp: " + temp_history[i] + "C</h4><h4>Humidity: " + humidity_history[i] + "%</h4></div>";
+      if (!temp_history[i].compareTo("/") && !humidity_history[i].compareTo("/")) {
+        break;
+      }
+      content += "<div style='margin-left:25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h3>" + String(i) + "h></h3><h4>Temp: " + temp_history[i] + "C</h4><h4>Humidity: " + humidity_history[i] + "%</h4></div>";
     }
-    content += "<div style='margin-left: 25%;width:50%;background:#5f5285;border-radius:25px;padding:20px;margin-bottom:1%;'><h3>Status</h3><h4>Uptime: " + uptime_val + "</h4><h4>Version: " + app_version + "</h4></div>";
-    content += "<div style='margin-left: 25%;width:50%;margin-top:5%;padding:20px;'>MrLaki5</div>";
+    content += "<div style='margin-left:25%;width:50%;margin-top:5%;padding:20px;'>MrLaki5</div>";
     content += "</body></html>";
     server.send(200, "text/html", content);
   });
